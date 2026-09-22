@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Sparkles, LogOut, User, ShieldCheck, Briefcase, FolderKanban, CheckCircle2, FileText, Search } from "lucide-react";
+import { Sparkles, LogOut, User, ShieldCheck, Briefcase, FolderKanban, FileText, Search, Bot } from "lucide-react";
 import { Button } from "./Button";
 import { Badge } from "./Badge";
 
@@ -29,24 +29,41 @@ export function Navbar() {
         </Link>
 
         {/* Navigation Links */}
-        <nav className="flex items-center gap-2 sm:gap-5">
+        <nav className="flex items-center gap-2 sm:gap-4">
           <Link
             href="/internships"
             className="text-xs sm:text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors flex items-center gap-1"
           >
             <Search className="w-4 h-4 text-indigo-600" />
-            <span>Internships</span>
+            <span className="hidden sm:inline">Explore</span> Jobs
           </Link>
 
           {user?.role === "STUDENT" && (
             <>
               <Link
+                href="/student/recommendations"
+                className="text-xs sm:text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors flex items-center gap-1"
+              >
+                <Sparkles className="w-4 h-4 text-violet-600" />
+                <span>AI Recommendations</span>
+              </Link>
+
+              <Link
+                href="/student/ai-guidance"
+                className="text-xs sm:text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors flex items-center gap-1"
+              >
+                <Bot className="w-4 h-4 text-emerald-600" />
+                <span className="hidden md:inline">AI</span> Mentor
+              </Link>
+
+              <Link
                 href="/student/applications"
                 className="text-xs sm:text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors flex items-center gap-1"
               >
-                <FileText className="w-4 h-4 text-violet-600" />
-                <span>My Applications</span>
+                <FileText className="w-4 h-4 text-slate-500" />
+                <span className="hidden lg:inline">My</span> Applications
               </Link>
+
               <Link
                 href="/student/profile"
                 className="text-xs sm:text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors flex items-center gap-1"
@@ -92,7 +109,7 @@ export function Navbar() {
 
           {/* User Auth Section */}
           {user ? (
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
               <Badge variant={user.role === "ADMIN" ? "warning" : "primary"}>
                 {user.role}
               </Badge>
