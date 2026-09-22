@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Sparkles, LogOut, User, ShieldCheck, Briefcase } from "lucide-react";
+import { Sparkles, LogOut, User, ShieldCheck, Briefcase, FolderKanban } from "lucide-react";
 import { Button } from "./Button";
 import { Badge } from "./Badge";
 
@@ -34,9 +34,16 @@ export function Navbar() {
             <>
               <Link
                 href="/student/dashboard"
-                className="text-sm font-medium text-slate-700 hover:text-indigo-600 transition-colors"
+                className="text-xs sm:text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors"
               >
                 Dashboard
+              </Link>
+              <Link
+                href="/student/profile"
+                className="text-xs sm:text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors flex items-center gap-1"
+              >
+                <User className="w-4 h-4 text-indigo-600" />
+                <span>Profile</span>
               </Link>
             </>
           )}
@@ -45,10 +52,24 @@ export function Navbar() {
             <>
               <Link
                 href="/admin/dashboard"
-                className="text-sm font-medium text-slate-700 hover:text-indigo-600 transition-colors flex items-center gap-1.5"
+                className="text-xs sm:text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors flex items-center gap-1"
               >
                 <ShieldCheck className="w-4 h-4 text-amber-600" />
-                Admin Portal
+                <span>Overview</span>
+              </Link>
+              <Link
+                href="/admin/internships"
+                className="text-xs sm:text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors flex items-center gap-1"
+              >
+                <Briefcase className="w-4 h-4 text-indigo-600" />
+                <span>Internships</span>
+              </Link>
+              <Link
+                href="/admin/categories"
+                className="text-xs sm:text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors flex items-center gap-1"
+              >
+                <FolderKanban className="w-4 h-4 text-violet-600" />
+                <span>Categories</span>
               </Link>
             </>
           )}
@@ -59,7 +80,7 @@ export function Navbar() {
               <Badge variant={user.role === "ADMIN" ? "warning" : "primary"}>
                 {user.role}
               </Badge>
-              <div className="hidden md:flex flex-col text-right">
+              <div className="hidden lg:flex flex-col text-right">
                 <span className="text-xs font-semibold text-slate-900">{user.name || user.email}</span>
                 <span className="text-[10px] text-slate-500 truncate max-w-[140px]">{user.email}</span>
               </div>

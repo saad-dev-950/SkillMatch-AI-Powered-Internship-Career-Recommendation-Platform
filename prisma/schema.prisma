@@ -19,21 +19,23 @@ model User {
 }
 
 model StudentProfile {
-  id         String         @id @default(uuid())
-  userId     String         @unique
-  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  firstName  String
-  lastName   String
-  phone      String?
-  bio        String?
-  avatarUrl  String?
-  resumeUrl  String?
-  location   String?
-  targetRole String?
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
-  educations Education[]
-  skills     StudentSkill[]
+  id                String         @id @default(uuid())
+  userId            String         @unique
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName         String
+  lastName          String
+  phone             String?
+  bio               String?
+  avatarUrl         String?
+  resumeUrl         String?
+  location          String?
+  targetRole        String?
+  preferredWorkMode String?        @default("REMOTE") // "REMOTE" | "HYBRID" | "ONSITE"
+  preferredCategory String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  educations        Education[]
+  skills            StudentSkill[]
 }
 
 model Education {
@@ -109,16 +111,16 @@ model InternshipSkill {
 }
 
 model Application {
-  id           String   @id @default(uuid())
+  id           String     @id @default(uuid())
   studentId    String
-  student      User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student      User       @relation(fields: [studentId], references: [id], onDelete: Cascade)
   internshipId String
   internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
-  status       String   @default("APPLIED") // "APPLIED" | "UNDER_REVIEW" | "INTERVIEWING" | "OFFERED" | "REJECTED" | "WITHDRAWN"
+  status       String     @default("APPLIED") // "APPLIED" | "UNDER_REVIEW" | "INTERVIEWING" | "OFFERED" | "REJECTED" | "WITHDRAWN"
   coverLetter  String?
   matchScore   Float?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   @@unique([studentId, internshipId])
 }
