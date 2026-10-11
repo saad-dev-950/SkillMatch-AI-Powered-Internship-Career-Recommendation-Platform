@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Search, Edit3, Trash2, Eye, EyeOff, MapPin, DollarSign, Calendar, Building2 } from "lucide-react";
+import { Plus, Search, Edit3, Trash2, Eye, EyeOff, MapPin, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
 import { InternshipFormModal } from "./InternshipFormModal";
 import { deleteInternshipAction, toggleInternshipStatusAction } from "@/lib/actions/adminInternshipActions";
+import { useToast } from "@/components/providers/ToastProvider";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 interface Category {
   id: string;
@@ -56,6 +58,11 @@ export function InternshipTable({ internships, categories, availableSkills }: In
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingInternship, setEditingInternship] = useState<Internship | null>(null);
 
+  const [jobToDelete, setJobToDelete] = useState<{ id: string; title: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const toast = useToast();
+
   const filteredInternships = internships.filter((job) => {
     const matchesSearch =
       job.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -77,15 +84,39 @@ export function InternshipTable({ internships, categories, availableSkills }: In
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string, title: string) => {
-    if (confirm(`Are you sure you want to delete "${title}"?`)) {
-      await deleteInternshipAction(id);
+  const confirmDeleteJob = async () => {
+    if (!jobToDelete) return;
+    setIsDeleting(true);
+    try {
+      const res = await deleteInternshipAction(jobToDelete.id);
+      if (res.success) {
+        toast.success(`Deleted internship listing "${jobToDelete.title}"`, "Listing Deleted");
+      } else {
+        toast.error(res.error || "Failed to delete internship.", "Error");
+      }
+    } catch {
+      toast.error("An unexpected error occurred.", "Error");
+    } finally {
+      setIsDeleting(false);
+      setJobToDelete(null);
     }
   };
 
-  const handleToggleStatus = async (id: string, currentStatus: string) => {
+  const handleToggleStatus = async (id: string, currentStatus: string, title: string) => {
     const nextStatus = currentStatus === "PUBLISHED" ? "DRAFT" : "PUBLISHED";
-    await toggleInternshipStatusAction(id, nextStatus as "DRAFT" | "PUBLISHED");
+    try {
+      const res = await toggleInternshipStatusAction(id, nextStatus as "DRAFT" | "PUBLISHED");
+      if (res.success) {
+        toast.info(
+          `Updated status of "${title}" to ${nextStatus.toLowerCase()}`,
+          "Status Updated"
+        );
+      } else {
+        toast.error(res.error || "Failed to update status.", "Error");
+      }
+    } catch {
+      toast.error("Failed to update internship status.", "Error");
+    }
   };
 
   const statusVariants: Record<string, "success" | "warning" | "danger"> = {
@@ -98,7 +129,7 @@ export function InternshipTable({ internships, categories, availableSkills }: In
     <div className="space-y-6">
       {/* Search, Filter & Action Toolbar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        <div className="flex flex-1 items-center gap-3">
+        <div className="flex flex-col sm:flex-row flex-1 items-stretch sm:items-center gap-3">
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <Input
@@ -112,7 +143,8 @@ export function InternshipTable({ internships, categories, availableSkills }: In
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:border-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            aria-label="Filter by Category"
+            className="px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="ALL">All Categories</option>
             {categories.map((c) => (
@@ -130,18 +162,18 @@ export function InternshipTable({ internships, categories, availableSkills }: In
       </div>
 
       {/* Internship Table Container */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
         {filteredInternships.length === 0 ? (
           <div className="p-12 text-center space-y-3">
-            <Building2 className="w-10 h-10 text-slate-300 mx-auto" />
-            <p className="text-sm font-bold text-slate-800">No internship listings found.</p>
-            <p className="text-xs text-slate-500">Try adjusting your search criteria or create a new job listing.</p>
+            <Building2 className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
+            <p className="text-sm font-bold text-slate-800 dark:text-slate-200">No internship listings found.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Try adjusting your search criteria or create a new job listing.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[700px]">
               <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                <tr className="bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <th className="py-3.5 px-6">Job Title & Company</th>
                   <th className="py-3.5 px-4">Category</th>
                   <th className="py-3.5 px-4">Work Mode</th>
@@ -151,13 +183,13 @@ export function InternshipTable({ internships, categories, availableSkills }: In
                   <th className="py-3.5 px-6 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-xs">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
                 {filteredInternships.map((job) => (
-                  <tr key={job.id} className="hover:bg-slate-50/50 transition-colors">
+                  <tr key={job.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
                     <td className="py-4 px-6">
-                      <div className="font-bold text-slate-900 text-sm">{job.title}</div>
-                      <div className="text-slate-500 flex items-center gap-2 mt-0.5">
-                        <span className="font-medium text-slate-700">{job.companyName}</span>
+                      <div className="font-bold text-slate-900 dark:text-slate-100 text-sm">{job.title}</div>
+                      <div className="text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-0.5">
+                        <span className="font-medium text-slate-700 dark:text-slate-300">{job.companyName}</span>
                         <span>•</span>
                         <span className="flex items-center gap-1">
                           <MapPin className="w-3 h-3 text-slate-400" />
@@ -166,7 +198,7 @@ export function InternshipTable({ internships, categories, availableSkills }: In
                       </div>
                     </td>
 
-                    <td className="py-4 px-4 font-semibold text-slate-700">
+                    <td className="py-4 px-4 font-semibold text-slate-700 dark:text-slate-300">
                       {job.category.name}
                     </td>
 
@@ -176,13 +208,13 @@ export function InternshipTable({ internships, categories, availableSkills }: In
                       </Badge>
                     </td>
 
-                    <td className="py-4 px-4 font-bold text-slate-900">
+                    <td className="py-4 px-4 font-bold text-slate-900 dark:text-slate-100">
                       {job.stipend ? `$${job.stipend.toLocaleString()}/mo` : "Unpaid / Negotiable"}
                     </td>
 
                     <td className="py-4 px-4">
                       <button
-                        onClick={() => handleToggleStatus(job.id, job.status)}
+                        onClick={() => handleToggleStatus(job.id, job.status, job.title)}
                         className="cursor-pointer"
                         title="Click to toggle publish status"
                       >
@@ -197,7 +229,7 @@ export function InternshipTable({ internships, categories, availableSkills }: In
                         {job.requiredSkills.slice(0, 3).map((rs) => (
                           <span
                             key={rs.skillId}
-                            className="px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-[10px] font-medium"
+                            className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded text-[10px] font-medium"
                           >
                             {rs.skill.name}
                           </span>
@@ -212,8 +244,9 @@ export function InternshipTable({ internships, categories, availableSkills }: In
 
                     <td className="py-4 px-6 text-right space-x-1">
                       <button
-                        onClick={() => handleToggleStatus(job.id, job.status)}
-                        className="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition-colors"
+                        onClick={() => handleToggleStatus(job.id, job.status, job.title)}
+                        aria-label={`${job.status === "PUBLISHED" ? "Unpublish" : "Publish"} ${job.title}`}
+                        className="p-1.5 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         title={job.status === "PUBLISHED" ? "Unpublish listing" : "Publish listing"}
                       >
                         {job.status === "PUBLISHED" ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -221,15 +254,17 @@ export function InternshipTable({ internships, categories, availableSkills }: In
 
                       <button
                         onClick={() => handleOpenEdit(job)}
-                        className="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition-colors"
+                        aria-label={`Edit ${job.title}`}
+                        className="p-1.5 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         title="Edit listing"
                       >
                         <Edit3 className="w-4 h-4" />
                       </button>
 
                       <button
-                        onClick={() => handleDelete(job.id, job.title)}
-                        className="p-1.5 text-slate-500 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
+                        onClick={() => setJobToDelete({ id: job.id, title: job.title })}
+                        aria-label={`Delete ${job.title}`}
+                        className="p-1.5 text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors"
                         title="Delete listing"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -250,6 +285,18 @@ export function InternshipTable({ internships, categories, availableSkills }: In
         categories={categories}
         availableSkills={availableSkills}
         initialData={editingInternship}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!jobToDelete}
+        onClose={() => setJobToDelete(null)}
+        onConfirm={confirmDeleteJob}
+        title="Delete Internship Listing"
+        message={`Are you sure you want to delete "${jobToDelete?.title}"? This action cannot be undone.`}
+        confirmText="Delete Listing"
+        variant="danger"
+        isLoading={isDeleting}
       />
     </div>
   );

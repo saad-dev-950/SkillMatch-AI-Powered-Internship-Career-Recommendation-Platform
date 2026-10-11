@@ -6,7 +6,8 @@ import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { adminUpdateApplicationStatusAction } from "@/lib/actions/applicationActions";
-import { User, GraduationCap, Award, Calendar, Mail, Phone, MapPin } from "lucide-react";
+import { GraduationCap, Award, Mail, Phone, MapPin } from "lucide-react";
+import { useToast } from "@/components/providers/ToastProvider";
 
 interface Education {
   id: string;
@@ -65,6 +66,8 @@ export function ApplicationDetailModal({
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
 
+  const toast = useToast();
+
   useEffect(() => {
     if (application) {
       setSelectedStatus(application.status);
@@ -82,21 +85,31 @@ export function ApplicationDetailModal({
     setIsLoading(true);
     setMessage("");
 
-    const res = await adminUpdateApplicationStatusAction({
-      applicationId: application.id,
-      status: selectedStatus as any,
-    });
+    try {
+      const res = await adminUpdateApplicationStatusAction({
+        applicationId: application.id,
+        status: selectedStatus as any,
+      });
 
-    setIsLoading(false);
-
-    if (res.success) {
-      setMessage("Status updated!");
-      setTimeout(() => {
-        setMessage("");
-        onClose();
-      }, 1000);
-    } else {
-      setMessage(res.error || "Failed to update status.");
+      if (res.success) {
+        toast.success(
+          `Updated status for ${fullName} to ${selectedStatus.replace("_", " ").toLowerCase()}`,
+          "Status Updated"
+        );
+        setMessage("Status updated!");
+        setTimeout(() => {
+          setMessage("");
+          onClose();
+        }, 800);
+      } else {
+        const err = res.error || "Failed to update status.";
+        setMessage(err);
+        toast.error(err, "Update Failed");
+      }
+    } catch {
+      toast.error("An unexpected error occurred.", "Error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -113,13 +126,13 @@ export function ApplicationDetailModal({
     <Modal isOpen={isOpen} onClose={onClose} title={`Candidate Application Review`} maxWidth="2xl">
       <div className="space-y-6">
         {/* Top Header Card */}
-        <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h4 className="font-extrabold text-slate-900 text-base">{fullName}</h4>
-            <p className="text-xs text-slate-600 font-medium">
-              Applied for: <strong className="text-indigo-600">{application.internship.title}</strong> ({application.internship.companyName})
+            <h4 className="font-extrabold text-slate-900 dark:text-slate-100 text-base">{fullName}</h4>
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+              Applied for: <strong className="text-indigo-600 dark:text-indigo-400">{application.internship.title}</strong> ({application.internship.companyName})
             </p>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-slate-400 dark:text-slate-500">
               Submitted on {new Date(application.createdAt).toLocaleDateString()}
             </p>
           </div>
@@ -130,29 +143,29 @@ export function ApplicationDetailModal({
         </div>
 
         {/* Change Status Form */}
-        <form onSubmit={handleUpdateStatus} className="p-4 bg-amber-50/50 border border-amber-200/80 rounded-2xl space-y-3">
-          <label className="block text-xs font-bold text-amber-900 uppercase tracking-wider">
+        <form onSubmit={handleUpdateStatus} className="p-4 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 rounded-2xl space-y-3">
+          <label className="block text-xs font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wider">
             Update Candidate Pipeline Status
           </label>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <Select
               options={statusOptions}
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="bg-white"
+              className="bg-white dark:bg-slate-900"
             />
             <Button type="submit" size="md" isLoading={isLoading} className="shrink-0 font-semibold">
               Save Status
             </Button>
           </div>
-          {message && <p className="text-xs font-semibold text-emerald-700">{message}</p>}
+          {message && <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">{message}</p>}
         </form>
 
         {/* Cover Letter */}
         {application.coverLetter && (
           <div className="space-y-2">
-            <h5 className="text-xs font-bold uppercase tracking-wider text-slate-500">Cover Note</h5>
-            <div className="p-4 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 leading-relaxed italic">
+            <h5 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Cover Note</h5>
+            <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
               &ldquo;{application.coverLetter}&rdquo;
             </div>
           </div>
@@ -160,22 +173,22 @@ export function ApplicationDetailModal({
 
         {/* Candidate Profile Highlights */}
         {profile ? (
-          <div className="space-y-4 pt-2 border-t">
-            <h5 className="text-xs font-bold uppercase tracking-wider text-slate-500">Candidate Information</h5>
+          <div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <h5 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Candidate Information</h5>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="flex items-center gap-2 text-slate-700">
+              <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
                 <Mail className="w-4 h-4 text-slate-400 shrink-0" />
                 <span>{application.student.email}</span>
               </div>
               {profile.phone && (
-                <div className="flex items-center gap-2 text-slate-700">
+                <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
                   <Phone className="w-4 h-4 text-slate-400 shrink-0" />
                   <span>{profile.phone}</span>
                 </div>
               )}
               {profile.location && (
-                <div className="flex items-center gap-2 text-slate-700">
+                <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
                   <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
                   <span>{profile.location}</span>
                 </div>
@@ -185,14 +198,14 @@ export function ApplicationDetailModal({
             {/* Education */}
             {profile.educations.length > 0 && (
               <div className="space-y-2">
-                <h6 className="text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
-                  <GraduationCap className="w-3.5 h-3.5 text-indigo-600" />
+                <h6 className="text-[11px] font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                  <GraduationCap className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                   Education
                 </h6>
                 {profile.educations.map((e) => (
-                  <div key={e.id} className="p-2.5 bg-slate-50 rounded-lg text-xs">
-                    <span className="font-bold text-slate-900 block">{e.institution}</span>
-                    <span className="text-slate-600">{e.degree} in {e.fieldOfStudy}</span>
+                  <div key={e.id} className="p-2.5 bg-slate-50 dark:bg-slate-800/50 rounded-lg text-xs">
+                    <span className="font-bold text-slate-900 dark:text-slate-100 block">{e.institution}</span>
+                    <span className="text-slate-600 dark:text-slate-400">{e.degree} in {e.fieldOfStudy}</span>
                   </div>
                 ))}
               </div>
@@ -201,13 +214,13 @@ export function ApplicationDetailModal({
             {/* Skills */}
             {profile.skills.length > 0 && (
               <div className="space-y-2">
-                <h6 className="text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
-                  <Award className="w-3.5 h-3.5 text-violet-600" />
+                <h6 className="text-[11px] font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                  <Award className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
                   Skills
                 </h6>
                 <div className="flex flex-wrap gap-1.5">
                   {profile.skills.map((s) => (
-                    <span key={s.id} className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded text-xs font-medium">
+                    <span key={s.id} className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded text-xs font-medium">
                       {s.skill.name} ({s.level})
                     </span>
                   ))}
@@ -216,7 +229,7 @@ export function ApplicationDetailModal({
             )}
           </div>
         ) : (
-          <p className="text-xs text-slate-500 italic">Candidate profile has not been completed yet.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 italic">Candidate profile has not been completed yet.</p>
         )}
       </div>
     </Modal>

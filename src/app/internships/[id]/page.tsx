@@ -1,9 +1,9 @@
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ApplyButtonSection } from "@/components/internships/ApplyButtonSection";
-import { MapPin, Calendar, Building2, CheckCircle2, ArrowLeft, ShieldCheck } from "lucide-react";
+import { MapPin, Calendar, Building2, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 
@@ -53,21 +53,22 @@ export default async function InternshipDetailPage({ params }: InternshipDetailP
       {/* Back Link */}
       <Link
         href="/internships"
-        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Internship Discovery
       </Link>
 
       {/* Header Info Card */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-          <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-slate-100 to-indigo-50 border border-slate-200 flex items-center justify-center font-bold text-indigo-700 shrink-0 text-xl shadow-xs">
-              <Building2 className="w-7 h-7 text-indigo-600" />
+      <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+          {/* Left Column: Job Info */}
+          <div className="flex items-start gap-4 min-w-0 flex-1">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-slate-100 to-indigo-50 dark:from-slate-800 dark:to-indigo-950 border border-slate-200 dark:border-slate-700 flex items-center justify-center font-bold text-indigo-700 dark:text-indigo-300 shrink-0 text-xl shadow-xs">
+              <Building2 className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
             </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
+            <div className="space-y-1.5 min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="primary" className="text-xs">
                   {job.category.name}
                 </Badge>
@@ -80,36 +81,39 @@ export default async function InternshipDetailPage({ params }: InternshipDetailP
                   </Badge>
                 )}
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-tight">
                 {job.title}
               </h1>
-              <p className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                 <span>{job.companyName}</span>
                 <span>•</span>
-                <span className="text-slate-500 font-normal flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                  {job.location}
+                <span className="text-slate-500 dark:text-slate-400 font-normal flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <span>{job.location}</span>
                 </span>
               </p>
             </div>
           </div>
 
-          <div className="text-left sm:text-right space-y-1 bg-slate-50 sm:bg-transparent p-4 sm:p-0 rounded-2xl border sm:border-0 border-slate-200">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Stipend</p>
-            <p className="text-xl font-extrabold text-slate-900">
+          {/* Right Column: Stipend Container Box */}
+          <div className="px-5 py-4 sm:px-6 sm:py-4.5 bg-slate-50/90 dark:bg-slate-800/70 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shrink-0 text-left sm:text-right space-y-1.5 min-w-[200px] shadow-xs backdrop-blur-xs transition-colors">
+            <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+              Stipend
+            </p>
+            <p className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight leading-tight">
               {job.stipend ? `$${job.stipend.toLocaleString()}/mo` : "Paid Position"}
             </p>
             {job.deadline && (
-              <p className="text-xs text-slate-500 flex items-center sm:justify-end gap-1">
-                <Calendar className="w-3 h-3 text-slate-400" />
-                Deadline: {new Date(job.deadline).toLocaleDateString()}
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center sm:justify-end gap-1.5 pt-0.5">
+                <Calendar className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400 shrink-0" />
+                <span>Deadline: {new Date(job.deadline).toLocaleDateString()}</span>
               </p>
             )}
           </div>
         </div>
 
         {/* Apply Action Bar */}
-        <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <ApplyButtonSection
             internshipId={job.id}
             internshipTitle={job.title}
@@ -129,7 +133,7 @@ export default async function InternshipDetailPage({ params }: InternshipDetailP
             <CardHeader>
               <CardTitle>Role Description</CardTitle>
             </CardHeader>
-            <div className="prose prose-slate text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+            <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
               {job.description}
             </div>
           </Card>
@@ -139,7 +143,7 @@ export default async function InternshipDetailPage({ params }: InternshipDetailP
               <CardHeader>
                 <CardTitle>Key Responsibilities</CardTitle>
               </CardHeader>
-              <div className="prose prose-slate text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+              <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
                 {job.responsibilities}
               </div>
             </Card>
@@ -150,7 +154,7 @@ export default async function InternshipDetailPage({ params }: InternshipDetailP
               <CardHeader>
                 <CardTitle>Requirements & Qualifications</CardTitle>
               </CardHeader>
-              <div className="prose prose-slate text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+              <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
                 {job.requirements}
               </div>
             </Card>
@@ -167,7 +171,7 @@ export default async function InternshipDetailPage({ params }: InternshipDetailP
               {job.requiredSkills.map((rs) => (
                 <span
                   key={rs.skill.id}
-                  className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-semibold border border-indigo-100"
+                  className="px-3 py-1 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-xl text-xs font-semibold border border-indigo-100 dark:border-indigo-900"
                 >
                   {rs.skill.name}
                 </span>
@@ -180,21 +184,21 @@ export default async function InternshipDetailPage({ params }: InternshipDetailP
               <CardTitle>Job Summary</CardTitle>
             </CardHeader>
             <div className="space-y-3 text-xs">
-              <div className="flex justify-between py-1.5 border-b border-slate-100">
-                <span className="text-slate-500">Employment Type:</span>
-                <span className="font-bold text-slate-900">{job.type.replace("_", " ")}</span>
+              <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-slate-500 dark:text-slate-400">Employment Type:</span>
+                <span className="font-bold text-slate-900 dark:text-slate-100">{job.type.replace("_", " ")}</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-slate-100">
-                <span className="text-slate-500">Work Setup:</span>
-                <span className="font-bold text-slate-900">{job.workMode}</span>
+              <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-slate-500 dark:text-slate-400">Work Setup:</span>
+                <span className="font-bold text-slate-900 dark:text-slate-100">{job.workMode}</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-slate-100">
-                <span className="text-slate-500">Category:</span>
-                <span className="font-bold text-slate-900">{job.category.name}</span>
+              <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-slate-500 dark:text-slate-400">Category:</span>
+                <span className="font-bold text-slate-900 dark:text-slate-100">{job.category.name}</span>
               </div>
               <div className="flex justify-between py-1.5">
-                <span className="text-slate-500">Posted On:</span>
-                <span className="font-bold text-slate-900">{new Date(job.createdAt).toLocaleDateString()}</span>
+                <span className="text-slate-500 dark:text-slate-400">Posted On:</span>
+                <span className="font-bold text-slate-900 dark:text-slate-100">{new Date(job.createdAt).toLocaleDateString()}</span>
               </div>
             </div>
           </Card>

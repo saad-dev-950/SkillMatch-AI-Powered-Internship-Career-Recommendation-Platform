@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import { createInternshipAction, updateInternshipAction } from "@/lib/actions/adminInternshipActions";
+import { useToast } from "@/components/providers/ToastProvider";
 
 interface Category {
   id: string;
@@ -73,6 +74,8 @@ export function InternshipFormModal({
 
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const toast = useToast();
 
   useEffect(() => {
     if (initialData) {
@@ -151,16 +154,26 @@ export function InternshipFormModal({
       skillIds: form.skillIds,
     };
 
-    const res = isEditing
-      ? await updateInternshipAction(initialData!.id!, payload)
-      : await createInternshipAction(payload);
+    try {
+      const res = isEditing
+        ? await updateInternshipAction(initialData!.id!, payload)
+        : await createInternshipAction(payload);
 
-    setIsLoading(false);
-
-    if (res.success) {
-      onClose();
-    } else {
-      setError(res.error || "Failed to save internship listing.");
+      if (res.success) {
+        toast.success(
+          isEditing ? `Updated "${form.title}"` : `Created "${form.title}"`,
+          "Listing Saved"
+        );
+        onClose();
+      } else {
+        const err = res.error || "Failed to save internship listing.";
+        setError(err);
+        toast.error(err, "Save Failed");
+      }
+    } catch {
+      toast.error("An unexpected error occurred.", "Error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -186,7 +199,7 @@ export function InternshipFormModal({
       maxWidth="2xl"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-semibold">{error}</div>}
+        {error && <div className="p-3.5 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 rounded-xl text-xs font-semibold">{error}</div>}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Input
@@ -277,10 +290,10 @@ export function InternshipFormModal({
 
         {/* Required Skill Tagger Selection */}
         <div className="space-y-1.5 pt-2">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
             Required Skills ({form.skillIds.length} selected)
           </label>
-          <div className="p-3 bg-slate-50 border rounded-xl flex flex-wrap gap-2 max-h-36 overflow-y-auto">
+          <div className="p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl flex flex-wrap gap-2 max-h-36 overflow-y-auto">
             {availableSkills.map((s) => {
               const isSelected = form.skillIds.includes(s.id);
               return (
@@ -291,7 +304,7 @@ export function InternshipFormModal({
                   className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
                     isSelected
                       ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
-                      : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
+                      : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
                   }`}
                 >
                   {s.name}
@@ -301,7 +314,7 @@ export function InternshipFormModal({
           </div>
         </div>
 
-        <div className="pt-4 flex justify-end gap-2 border-t">
+        <div className="pt-4 flex justify-end gap-2 border-t border-slate-200 dark:border-slate-800">
           <Button type="button" variant="ghost" onClick={onClose}>
             Cancel
           </Button>

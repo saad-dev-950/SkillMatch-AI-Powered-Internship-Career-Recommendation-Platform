@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { calculateMatchScore, StudentMatchingInput, InternshipMatchingInput } from "@/lib/matching";
 import { AIRecommendationCard } from "@/components/ai/AIRecommendationCard";
-import { Sparkles, Briefcase, Award } from "lucide-react";
+import { Sparkles, Briefcase } from "lucide-react";
 
 export default async function StudentRecommendationsPage() {
   const session = await auth();
@@ -77,7 +77,7 @@ export default async function StudentRecommendationsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-indigo-900 via-violet-950 to-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-xl shadow-indigo-950/10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-gradient-to-r from-indigo-900 via-violet-950 to-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 text-indigo-200 rounded-full text-xs font-semibold backdrop-blur-md border border-white/10">
             <Sparkles className="w-3.5 h-3.5 text-indigo-300" />
@@ -99,10 +99,10 @@ export default async function StudentRecommendationsPage() {
 
       {/* Ranked Listings Grid */}
       {rankedInternships.length === 0 ? (
-        <div className="bg-white p-12 rounded-3xl border border-slate-200 text-center space-y-3 max-w-xl mx-auto">
-          <Briefcase className="w-10 h-10 text-slate-300 mx-auto" />
-          <h3 className="text-base font-bold text-slate-800">No active internship listings</h3>
-          <p className="text-xs text-slate-500">Check back soon for new open positions from recruiters.</p>
+        <div className="bg-white dark:bg-slate-900 p-12 rounded-3xl border border-slate-200 dark:border-slate-800 text-center space-y-3 max-w-xl mx-auto">
+          <Briefcase className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
+          <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">No active internship listings</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Check back soon for new open positions from recruiters.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

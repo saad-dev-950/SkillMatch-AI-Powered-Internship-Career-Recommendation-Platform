@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { ProfileForm } from "@/components/student/ProfileForm";
 import { EducationManager } from "@/components/student/EducationManager";
 import { SkillManager } from "@/components/student/SkillManager";
-import { User, CheckCircle2, Sparkles } from "lucide-react";
+import { User } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 
 export default async function StudentProfilePage() {
@@ -46,42 +46,42 @@ export default async function StudentProfilePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Header Banner */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6 transition-colors">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-semibold">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-full text-xs font-semibold border border-indigo-100 dark:border-indigo-900">
             <User className="w-3.5 h-3.5" />
             <span>Student Profile Builder</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
             Manage Candidate Profile
           </h1>
-          <p className="text-slate-500 text-sm">
+          <p className="text-slate-500 dark:text-slate-400 text-sm">
             Keep your skills, education, and career preferences up to date for optimal internship matching.
           </p>
         </div>
 
         {/* Profile Completion Indicator */}
-        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 shrink-0 space-y-2 min-w-[220px]">
-          <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+        <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shrink-0 space-y-2 min-w-[220px]">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-900 dark:text-slate-100">
             <span>Profile Completion</span>
-            <span className="text-indigo-600 font-extrabold">{completionScore}%</span>
+            <span className="text-indigo-600 dark:text-indigo-400 font-extrabold">{completionScore}%</span>
           </div>
-          <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+          <div className="w-full h-2.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-indigo-500 to-violet-600 transition-all duration-500 rounded-full"
               style={{ width: `${completionScore}%` }}
             />
           </div>
-          <p className="text-[10px] text-slate-500">
+          <p className="text-[10px] text-slate-500 dark:text-slate-400">
             {completionScore >= 80 ? "🎉 Outstanding profile strength!" : "Add more details to boost match score."}
           </p>
         </div>
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Personal Info & Career Goals Form */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-7 xl:col-span-7">
           <Card>
             <CardHeader>
               <CardTitle>Personal Details & Preferences</CardTitle>
@@ -103,7 +103,7 @@ export default async function StudentProfilePage() {
         </div>
 
         {/* Right Column: Education & Skills Managers */}
-        <div className="space-y-8">
+        <div className="lg:col-span-5 xl:col-span-5 space-y-8">
           <Card>
             <EducationManager educations={profile?.educations || []} />
           </Card>

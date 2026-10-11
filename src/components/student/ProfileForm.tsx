@@ -6,7 +6,8 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import { updateStudentProfileAction } from "@/lib/actions/profileActions";
-import { AlertCircle, CheckCircle2, User, Target, MapPin, Briefcase } from "lucide-react";
+import { AlertCircle, CheckCircle2, User, Target } from "lucide-react";
+import { useToast } from "@/components/providers/ToastProvider";
 
 interface ProfileFormProps {
   initialData: {
@@ -37,21 +38,32 @@ export function ProfileForm({ initialData, categories }: ProfileFormProps) {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const toast = useToast();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(null);
     setIsLoading(true);
 
-    const res = await updateStudentProfileAction({
-      ...formData,
-      preferredWorkMode: formData.preferredWorkMode as "REMOTE" | "HYBRID" | "ONSITE",
-    });
-    setIsLoading(false);
+    try {
+      const res = await updateStudentProfileAction({
+        ...formData,
+        preferredWorkMode: formData.preferredWorkMode as "REMOTE" | "HYBRID" | "ONSITE",
+      });
 
-    if (res.success) {
-      setMessage({ type: "success", text: res.message || "Profile updated!" });
-    } else {
-      setMessage({ type: "error", text: res.error || "Failed to update profile." });
+      if (res.success) {
+        const msg = res.message || "Profile details saved successfully!";
+        setMessage({ type: "success", text: msg });
+        toast.success(msg, "Profile Updated");
+      } else {
+        const err = res.error || "Failed to update profile.";
+        setMessage({ type: "error", text: err });
+        toast.error(err, "Update Failed");
+      }
+    } catch {
+      toast.error("An unexpected error occurred while saving profile.", "Error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -72,14 +84,14 @@ export function ProfileForm({ initialData, categories }: ProfileFormProps) {
         <div
           className={`p-4 rounded-xl border text-xs font-semibold flex items-center gap-2 ${
             message.type === "success"
-              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-              : "bg-rose-50 text-rose-800 border-rose-200"
+              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900"
+              : "bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-900"
           }`}
         >
           {message.type === "success" ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
           ) : (
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
           )}
           <span>{message.text}</span>
         </div>
@@ -87,8 +99,8 @@ export function ProfileForm({ initialData, categories }: ProfileFormProps) {
 
       {/* Personal Info Grid */}
       <div className="space-y-4">
-        <h4 className="text-sm font-bold text-slate-900 border-b pb-2 flex items-center gap-2">
-          <User className="w-4 h-4 text-indigo-600" />
+        <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 border-b border-slate-200 dark:border-slate-800 pb-2 flex items-center gap-2">
+          <User className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
           Personal Details
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -131,9 +143,9 @@ export function ProfileForm({ initialData, categories }: ProfileFormProps) {
       </div>
 
       {/* Career Preferences */}
-      <div className="space-y-4 pt-4 border-t">
-        <h4 className="text-sm font-bold text-slate-900 border-b pb-2 flex items-center gap-2">
-          <Target className="w-4 h-4 text-violet-600" />
+      <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 border-b border-slate-200 dark:border-slate-800 pb-2 flex items-center gap-2">
+          <Target className="w-4 h-4 text-violet-600 dark:text-violet-400" />
           Career Preferences
         </h4>
 

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Sparkles, MapPin, Building2, CheckCircle2, AlertTriangle, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { MatchResult } from "@/lib/matching";
@@ -34,9 +33,9 @@ export function AIRecommendationCard({ internship, matchResult }: AIRecommendati
   const score = matchResult.matchScore;
 
   const getScoreColor = (s: number) => {
-    if (s >= 80) return "bg-emerald-500 text-white shadow-emerald-200";
-    if (s >= 60) return "bg-indigo-600 text-white shadow-indigo-200";
-    return "bg-amber-500 text-white shadow-amber-200";
+    if (s >= 80) return "bg-emerald-500 text-white shadow-emerald-200 dark:shadow-none";
+    if (s >= 60) return "bg-indigo-600 text-white shadow-indigo-200 dark:shadow-none";
+    return "bg-amber-500 text-white shadow-amber-200 dark:shadow-none";
   };
 
   const handleFetchExplanation = async () => {
@@ -68,17 +67,17 @@ export function AIRecommendationCard({ internship, matchResult }: AIRecommendati
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-indigo-200 transition-all space-y-4">
+    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between hover:border-indigo-300 dark:hover:border-indigo-700 transition-all space-y-4">
       <div className="space-y-3">
         {/* Header Badges & Match % */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 shrink-0 font-bold">
-              <Building2 className="w-5 h-5 text-indigo-600" />
+            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-300 shrink-0 font-bold">
+              <Building2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-sm">{internship.companyName}</h4>
-              <p className="text-xs text-slate-500 flex items-center gap-1">
+              <h4 className="font-bold text-slate-900 dark:text-slate-100 text-sm">{internship.companyName}</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
                 <MapPin className="w-3.5 h-3.5 text-slate-400" />
                 {internship.location} ({internship.workMode})
               </p>
@@ -88,14 +87,14 @@ export function AIRecommendationCard({ internship, matchResult }: AIRecommendati
           {/* Deterministic Match Score Badge */}
           <div className="flex flex-col items-end shrink-0">
             <span
-              className={`px-3 py-1 rounded-full text-xs font-black shadow-sm ${getScoreColor(
+              className={`px-3 py-1 rounded-full text-xs font-black shadow-xs ${getScoreColor(
                 score
               )}`}
               title="Calculated deterministically by SkillMatch Engine"
             >
               {score}% Match
             </span>
-            <span className="text-[9px] text-slate-400 mt-0.5 font-semibold">Engine Score</span>
+            <span className="text-[9px] text-slate-400 dark:text-slate-500 mt-0.5 font-semibold">Engine Score</span>
           </div>
         </div>
 
@@ -103,11 +102,11 @@ export function AIRecommendationCard({ internship, matchResult }: AIRecommendati
         <div>
           <Link
             href={`/internships/${internship.id}`}
-            className="font-extrabold text-slate-900 text-base hover:text-indigo-600 transition-colors"
+            className="font-extrabold text-slate-900 dark:text-slate-100 text-base hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors line-clamp-2"
           >
             {internship.title}
           </Link>
-          <p className="text-xs text-slate-500 mt-0.5">Category: {internship.category.name}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Category: {internship.category.name}</p>
         </div>
 
         {/* Skill Overlap Preview */}
@@ -115,9 +114,9 @@ export function AIRecommendationCard({ internship, matchResult }: AIRecommendati
           {matchResult.matchedSkills.map((ms) => (
             <span
               key={ms.skillId}
-              className="px-2.5 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-md font-medium text-[11px] flex items-center gap-1"
+              className="px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900 rounded-md font-medium text-[11px] flex items-center gap-1"
             >
-              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+              <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
               {ms.name}
             </span>
           ))}
@@ -125,9 +124,9 @@ export function AIRecommendationCard({ internship, matchResult }: AIRecommendati
           {matchResult.missingSkills.map((ms) => (
             <span
               key={ms.skillId}
-              className="px-2.5 py-0.5 bg-rose-50 text-rose-700 border border-rose-200 rounded-md font-medium text-[11px] flex items-center gap-1"
+              className="px-2.5 py-0.5 bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900 rounded-md font-medium text-[11px] flex items-center gap-1"
             >
-              <AlertTriangle className="w-3 h-3 text-rose-500" />
+              <AlertTriangle className="w-3 h-3 text-rose-500 dark:text-rose-400" />
               Missing: {ms.name}
             </span>
           ))}
@@ -135,20 +134,22 @@ export function AIRecommendationCard({ internship, matchResult }: AIRecommendati
       </div>
 
       {/* AI Explanation Toggle & Actions */}
-      <div className="pt-4 border-t border-slate-100 space-y-3">
+      <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
         <div className="flex items-center justify-between gap-2">
           <button
+            type="button"
             onClick={handleFetchExplanation}
-            className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition-colors"
+            className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1 transition-colors"
           >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+            <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
             <span>Why You Match</span>
             {showDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           </button>
 
           <button
+            type="button"
             onClick={handleFetchSkillGap}
-            className="text-xs font-semibold text-slate-600 hover:text-slate-900 underline transition-colors"
+            className="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 underline transition-colors"
           >
             Skill-Gap Analysis
           </button>
@@ -156,16 +157,16 @@ export function AIRecommendationCard({ internship, matchResult }: AIRecommendati
 
         {/* AI Match Explanation Drawer */}
         {showDetails && (
-          <div className="p-3.5 bg-indigo-50/60 border border-indigo-100 rounded-xl text-xs space-y-2 animate-in fade-in-50">
+          <div className="p-3.5 bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 rounded-xl text-xs space-y-2 animate-in fade-in-50">
             {isLoadingExplanation ? (
-              <p className="text-indigo-600 font-medium animate-pulse">Generating AI Match Explanation...</p>
+              <p className="text-indigo-600 dark:text-indigo-400 font-medium animate-pulse">Generating AI Match Explanation...</p>
             ) : (
               <>
-                <p className="text-slate-800 leading-relaxed font-medium">{explanation}</p>
-                <div className="pt-2 border-t border-indigo-100/80 grid grid-cols-3 gap-2 text-[10px] text-slate-500">
-                  <div>Skill Score: <strong className="text-slate-800">{matchResult.scoreBreakdown.skillScore}%</strong></div>
-                  <div>Location: <strong className="text-slate-800">{matchResult.scoreBreakdown.locationScore}%</strong></div>
-                  <div>Category: <strong className="text-slate-800">{matchResult.scoreBreakdown.categoryScore}%</strong></div>
+                <p className="text-slate-800 dark:text-slate-200 leading-relaxed font-medium">{explanation}</p>
+                <div className="pt-2 border-t border-indigo-100/80 dark:border-indigo-900/80 grid grid-cols-3 gap-2 text-[10px] text-slate-500 dark:text-slate-400">
+                  <div>Skill Score: <strong className="text-slate-800 dark:text-slate-200">{matchResult.scoreBreakdown.skillScore}%</strong></div>
+                  <div>Location: <strong className="text-slate-800 dark:text-slate-200">{matchResult.scoreBreakdown.locationScore}%</strong></div>
+                  <div>Category: <strong className="text-slate-800 dark:text-slate-200">{matchResult.scoreBreakdown.categoryScore}%</strong></div>
                 </div>
               </>
             )}
@@ -190,25 +191,25 @@ export function AIRecommendationCard({ internship, matchResult }: AIRecommendati
       >
         <div className="space-y-4 text-xs">
           {isLoadingGap ? (
-            <p className="text-indigo-600 font-medium py-6 text-center animate-pulse">Analyzing skill profile requirements...</p>
+            <p className="text-indigo-600 dark:text-indigo-400 font-medium py-6 text-center animate-pulse">Analyzing skill profile requirements...</p>
           ) : skillGapReport ? (
             <>
-              <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl space-y-1">
-                <p className="font-bold text-emerald-900">Matched Skills Summary</p>
-                <p className="text-emerald-800">{skillGapReport.matchingSkillsSummary}</p>
+              <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-900 rounded-xl space-y-1">
+                <p className="font-bold text-emerald-900 dark:text-emerald-300">Matched Skills Summary</p>
+                <p className="text-emerald-800 dark:text-emerald-400">{skillGapReport.matchingSkillsSummary}</p>
               </div>
 
-              <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl space-y-1">
-                <p className="font-bold text-amber-900">Skill Gaps Identified</p>
-                <p className="text-amber-800">{skillGapReport.missingSkillsSummary}</p>
+              <div className="p-3.5 bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900 rounded-xl space-y-1">
+                <p className="font-bold text-amber-900 dark:text-amber-300">Skill Gaps Identified</p>
+                <p className="text-amber-800 dark:text-amber-400">{skillGapReport.missingSkillsSummary}</p>
               </div>
 
               <div className="space-y-2">
-                <p className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Recommended Learning Actions</p>
+                <p className="font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider text-[11px]">Recommended Learning Actions</p>
                 <ul className="space-y-2">
                   {skillGapReport.recommendedActions.map((action, idx) => (
-                    <li key={idx} className="p-3 bg-slate-50 border rounded-lg text-slate-700 flex items-start gap-2">
-                      <span className="font-bold text-indigo-600 shrink-0">{idx + 1}.</span>
+                    <li key={idx} className="p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 flex items-start gap-2">
+                      <span className="font-bold text-indigo-600 dark:text-indigo-400 shrink-0">{idx + 1}.</span>
                       <span>{action}</span>
                     </li>
                   ))}

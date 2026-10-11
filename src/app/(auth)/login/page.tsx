@@ -55,45 +55,45 @@ function LoginFormContent() {
     <div className="w-full max-w-md space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <div className="inline-flex w-12 h-12 rounded-2xl bg-indigo-600 items-center justify-center text-white shadow-lg shadow-indigo-200">
+        <div className="inline-flex w-12 h-12 rounded-2xl bg-indigo-600 items-center justify-center text-white shadow-lg shadow-indigo-200 dark:shadow-none">
           <Sparkles className="w-6 h-6" />
         </div>
-        <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Sign in to SkillMatch</h1>
-        <p className="text-sm text-slate-500">Access your candidate dashboard or admin portal</p>
+        <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Sign in to SkillMatch</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Access your candidate dashboard or admin portal</p>
       </div>
 
       {/* Demo Prefill Quick Buttons */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
-        <p className="text-xs font-bold text-slate-700 flex items-center justify-between">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-2 transition-colors">
+        <p className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
           <span>Evaluation Quick Fill:</span>
-          <span className="text-[10px] text-indigo-600 font-normal">Click to auto-fill</span>
+          <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-normal">Click to auto-fill</span>
         </p>
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
             onClick={() => prefillAccount("student@skillmatch.com", "StudentPassword123!")}
-            className="flex items-center gap-1.5 px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold border border-indigo-200 transition-colors text-left"
+            className="flex items-center gap-1.5 px-3 py-2 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-xl text-xs font-semibold border border-indigo-200 dark:border-indigo-900 transition-colors text-left"
           >
-            <GraduationCap className="w-3.5 h-3.5 shrink-0 text-indigo-600" />
+            <GraduationCap className="w-3.5 h-3.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
             <span>Student Account</span>
           </button>
           <button
             type="button"
             onClick={() => prefillAccount("admin@skillmatch.com", "AdminPassword123!")}
-            className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-lg text-xs font-semibold border border-amber-200 transition-colors text-left"
+            className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-300 rounded-xl text-xs font-semibold border border-amber-200 dark:border-amber-900 transition-colors text-left"
           >
-            <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-amber-600" />
+            <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
             <span>Admin Account</span>
           </button>
         </div>
       </div>
 
       {/* Login Card Form */}
-      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <div className="p-3.5 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl text-xs text-rose-700 dark:text-rose-300 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 dark:text-rose-400" />
               <span>{error}</span>
             </div>
           )}
@@ -121,9 +121,9 @@ function LoginFormContent() {
           </Button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-slate-100 text-center text-xs text-slate-500">
+        <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400">
           Don&apos;t have a student account?{" "}
-          <Link href="/register" className="font-semibold text-indigo-600 hover:text-indigo-700">
+          <Link href="/register" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300">
             Create an Account
           </Link>
         </div>
@@ -134,7 +134,7 @@ function LoginFormContent() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 py-12 bg-slate-50">
+    <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 py-12">
       <Suspense fallback={<div className="text-center text-xs text-slate-500 py-10">Loading Sign In...</div>}>
         <LoginFormContent />
       </Suspense>
