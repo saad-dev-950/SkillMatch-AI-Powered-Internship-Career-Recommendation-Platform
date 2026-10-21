@@ -36,8 +36,19 @@ function LoginFormContent() {
         return;
       }
 
-      router.refresh();
-      router.push(callbackUrl);
+      const normalizedEmail = email.trim().toLowerCase();
+      const explicitCallback = searchParams.get("callbackUrl");
+      let target = explicitCallback || "/student/dashboard";
+
+      if (!explicitCallback || explicitCallback === "/student/dashboard") {
+        if (normalizedEmail.includes("admin")) {
+          target = "/admin/dashboard";
+        } else {
+          target = "/student/dashboard";
+        }
+      }
+
+      window.location.href = target;
     } catch (err) {
       console.error(err);
       setError("An unexpected error occurred during sign in.");

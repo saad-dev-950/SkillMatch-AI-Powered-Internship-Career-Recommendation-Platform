@@ -1,10 +1,61 @@
 import { PrismaClient } from "@prisma/client";
 import path from "path";
 import fs from "fs";
+import zlib from "zlib";
+import { SEED_DB_GZIP_BASE64 } from "./seedDbBackup";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
+
+function ensureVercelDatabase(): string {
+  const tmpDbPath = path.join("/tmp", "dev.db");
+
+  // Check if /tmp/dev.db is already present and valid
+  if (fs.existsSync(tmpDbPath)) {
+    try {
+      const stats = fs.statSync(tmpDbPath);
+      if (stats.size > 1000) {
+        return `file:${tmpDbPath}`;
+      }
+    } catch {}
+  }
+
+  // 1. Try copying from disk candidates
+  const candidates = [
+    path.join(process.cwd(), "prisma", "dev.db"),
+    path.join(process.cwd(), "dev.db"),
+    path.join(__dirname, "prisma", "dev.db"),
+    path.resolve("prisma", "dev.db"),
+  ];
+
+  let copied = false;
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      try {
+        fs.copyFileSync(candidate, tmpDbPath);
+        copied = true;
+        break;
+      } catch (e) {
+        console.error("[SkillMatch DB] Failed to copy candidate to /tmp:", e);
+      }
+    }
+  }
+
+  // 2. If disk copy failed or file wasn't bundled, unpack from embedded gzip seed
+  if (!copied || !fs.existsSync(tmpDbPath)) {
+    try {
+      const gzippedBuffer = Buffer.from(SEED_DB_GZIP_BASE64, "base64");
+      const unzipped = zlib.gunzipSync(gzippedBuffer);
+      fs.writeFileSync(tmpDbPath, unzipped);
+      console.log(`[SkillMatch DB] Initialized seed database in /tmp/dev.db (${unzipped.length} bytes)`);
+    } catch (err) {
+      console.error("[SkillMatch DB] Failed to unpack seed database to /tmp:", err);
+    }
+  }
+
+  return `file:${tmpDbPath}`;
+}
 
 function getDatabaseUrl(): string | undefined {
   const envUrl = process.env.DATABASE_URL;
@@ -16,31 +67,7 @@ function getDatabaseUrl(): string | undefined {
 
   // When deployed to Vercel serverless environment
   if (process.env.VERCEL) {
-    const tmpDbPath = path.join("/tmp", "dev.db");
-
-    // Copy bundled seed database into writable /tmp on cold start
-    if (!fs.existsSync(tmpDbPath)) {
-      const candidates = [
-        path.join(process.cwd(), "prisma", "dev.db"),
-        path.join(process.cwd(), "dev.db"),
-        path.join(__dirname, "prisma", "dev.db"),
-      ];
-
-      for (const candidate of candidates) {
-        if (fs.existsSync(candidate)) {
-          try {
-            fs.copyFileSync(candidate, tmpDbPath);
-            break;
-          } catch (e) {
-            console.error("[SkillMatch DB] Failed to copy seed sqlite db to /tmp:", e);
-          }
-        }
-      }
-    }
-
-    if (fs.existsSync(tmpDbPath)) {
-      return `file:${tmpDbPath}`;
-    }
+    return ensureVercelDatabase();
   }
 
   // Local development: resolve to absolute path

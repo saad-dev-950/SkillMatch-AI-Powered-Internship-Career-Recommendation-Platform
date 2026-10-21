@@ -51,11 +51,12 @@ export async function registerStudentAction(input: RegisterInput) {
       success: true,
       message: "Account created successfully! You can now log in.",
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in registerStudentAction:", error);
+    const errorMsg = error?.message || "An unexpected server error occurred. Please try again.";
     return {
       success: false,
-      error: "An unexpected server error occurred. Please try again.",
+      error: errorMsg,
     };
   }
 }
