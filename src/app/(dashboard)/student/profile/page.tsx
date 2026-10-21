@@ -7,6 +7,8 @@ import { SkillManager } from "@/components/student/SkillManager";
 import { User } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 
+export const dynamic = "force-dynamic";
+
 export default async function StudentProfilePage() {
   const session = await auth();
 

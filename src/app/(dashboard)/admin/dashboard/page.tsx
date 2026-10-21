@@ -6,6 +6,8 @@ import { Users, Briefcase, FolderKanban, CheckCircle2, TrendingUp, Award, ArrowR
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboardPage() {
   const session = await auth();
 

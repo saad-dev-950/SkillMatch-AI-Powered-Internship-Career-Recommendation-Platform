@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { StudentApplicationsList } from "@/components/student/StudentApplicationsList";
 import { GraduationCap } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function StudentApplicationsPage() {
   const session = await auth();
 

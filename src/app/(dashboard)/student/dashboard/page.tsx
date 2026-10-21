@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { GraduationCap, Briefcase, CheckCircle2, Award } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 
+export const dynamic = "force-dynamic";
+
 export default async function StudentDashboardPage() {
   const session = await auth();
 

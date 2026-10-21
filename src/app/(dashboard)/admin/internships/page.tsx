@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { InternshipTable } from "@/components/admin/InternshipTable";
 import { ShieldCheck } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminInternshipsPage() {
   const session = await auth();
 

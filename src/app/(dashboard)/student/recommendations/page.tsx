@@ -5,6 +5,8 @@ import { calculateMatchScore, StudentMatchingInput, InternshipMatchingInput } fr
 import { AIRecommendationCard } from "@/components/ai/AIRecommendationCard";
 import { Sparkles, Briefcase } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function StudentRecommendationsPage() {
   const session = await auth();
 

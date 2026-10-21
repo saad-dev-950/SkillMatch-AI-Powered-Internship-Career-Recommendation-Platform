@@ -10,6 +10,8 @@ interface InternshipsPageProps {
   };
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function InternshipsPage({ searchParams }: InternshipsPageProps) {
   const query = searchParams.q || "";
   const selectedCategory = searchParams.category || "ALL";

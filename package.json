@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "node -e \"require('fs').rmSync('.next', { recursive: true, force: true })\" && node node_modules/next/dist/bin/next dev",
     "clean": "node -e \"require('fs').rmSync('.next', { recursive: true, force: true })\"",
-    "build": "node node_modules/next/dist/bin/next build",
+    "postinstall": "node node_modules/prisma/build/index.js generate || prisma generate || true",
+    "build": "node node_modules/prisma/build/index.js generate && node node_modules/next/dist/bin/next build",
     "start": "node node_modules/next/dist/bin/next start",
     "lint": "node node_modules/next/dist/bin/next lint",
     "test:matching": "node dist/matching.test.js",

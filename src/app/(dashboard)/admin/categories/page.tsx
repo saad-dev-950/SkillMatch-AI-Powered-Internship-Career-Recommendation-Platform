@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { CategoryManager } from "@/components/admin/CategoryManager";
 import { ShieldCheck } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminCategoriesPage() {
   const session = await auth();
 

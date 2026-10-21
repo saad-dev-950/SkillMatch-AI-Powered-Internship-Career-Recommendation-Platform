@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { AIChatBox } from "@/components/ai/AIChatBox";
 import { Sparkles } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function StudentAIGuidancePage() {
   const session = await auth();
 

@@ -13,6 +13,8 @@ interface InternshipDetailPageProps {
   };
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function InternshipDetailPage({ params }: InternshipDetailPageProps) {
   const session = await auth();
   const userId = session?.user?.id;

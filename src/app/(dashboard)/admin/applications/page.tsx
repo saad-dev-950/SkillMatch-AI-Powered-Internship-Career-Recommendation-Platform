@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { AdminApplicationsTable } from "@/components/admin/AdminApplicationsTable";
 import { ShieldCheck } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminApplicationsPage() {
   const session = await auth();
 
