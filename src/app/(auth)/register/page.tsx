@@ -80,15 +80,20 @@ export default function RegisterPage() {
         if (signInRes?.ok && !signInRes.error) {
           window.location.href = "/student/dashboard";
           return;
+        } else {
+          setSuccess("Account created successfully! Redirecting to login page...");
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 1200);
+          return;
         }
       } catch (err) {
         console.error("Auto sign-in error:", err);
+        setSuccess("Account created successfully! Redirecting to login page...");
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1200);
       }
-
-      // Fallback navigation
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 1000);
     } catch {
       toast.error("An unexpected error occurred during registration.", "Error");
       setError("An unexpected error occurred during registration.");

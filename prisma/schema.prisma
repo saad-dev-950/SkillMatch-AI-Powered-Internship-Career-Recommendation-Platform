@@ -1,5 +1,5 @@
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
@@ -8,7 +8,7 @@ generator client {
 }
 
 model User {
-  id           String          @id @default(uuid())
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
   email        String          @unique
   passwordHash String
   role         String          @default("STUDENT") // "STUDENT" | "ADMIN"
@@ -19,8 +19,8 @@ model User {
 }
 
 model StudentProfile {
-  id                String         @id @default(uuid())
-  userId            String         @unique
+  id                String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String         @unique @db.ObjectId
   user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   firstName         String
   lastName          String
@@ -39,8 +39,8 @@ model StudentProfile {
 }
 
 model Education {
-  id           String         @id @default(uuid())
-  profileId    String
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  profileId    String         @db.ObjectId
   profile      StudentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
   institution  String
   degree       String
@@ -52,7 +52,7 @@ model Education {
 }
 
 model Skill {
-  id               String            @id @default(uuid())
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
   name             String            @unique
   category         String
   studentSkills    StudentSkill[]
@@ -60,10 +60,10 @@ model Skill {
 }
 
 model StudentSkill {
-  id        String         @id @default(uuid())
-  profileId String
+  id        String         @id @default(auto()) @map("_id") @db.ObjectId
+  profileId String         @db.ObjectId
   profile   StudentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  skillId   String
+  skillId   String         @db.ObjectId
   skill     Skill          @relation(fields: [skillId], references: [id], onDelete: Cascade)
   level     String         @default("INTERMEDIATE") // "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "EXPERT"
 
@@ -71,14 +71,14 @@ model StudentSkill {
 }
 
 model Category {
-  id          String       @id @default(uuid())
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
   name        String       @unique
   slug        String       @unique
   internships Internship[]
 }
 
 model Internship {
-  id               String            @id @default(uuid())
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
   title            String
   companyName      String
   companyLogo      String?
@@ -89,7 +89,7 @@ model Internship {
   responsibilities String?
   requirements     String?
   stipend          Float?
-  categoryId       String
+  categoryId       String            @db.ObjectId
   category         Category          @relation(fields: [categoryId], references: [id])
   status           String            @default("PUBLISHED") // "DRAFT" | "PUBLISHED" | "CLOSED"
   deadline         DateTime?
@@ -100,10 +100,10 @@ model Internship {
 }
 
 model InternshipSkill {
-  id           String     @id @default(uuid())
-  internshipId String
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  internshipId String     @db.ObjectId
   internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
-  skillId      String
+  skillId      String     @db.ObjectId
   skill        Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
   isRequired   Boolean    @default(true)
 
@@ -111,10 +111,10 @@ model InternshipSkill {
 }
 
 model Application {
-  id           String     @id @default(uuid())
-  studentId    String
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  studentId    String     @db.ObjectId
   student      User       @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  internshipId String
+  internshipId String     @db.ObjectId
   internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
   status       String     @default("APPLIED") // "APPLIED" | "UNDER_REVIEW" | "INTERVIEWING" | "OFFERED" | "REJECTED" | "WITHDRAWN"
   coverLetter  String?
