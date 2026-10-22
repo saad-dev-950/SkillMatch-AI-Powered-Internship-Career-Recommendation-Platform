@@ -53,16 +53,19 @@ export class MockAIProvider implements IAIServiceProvider {
     student: StudentMatchingInput
   ): Promise<string> {
     const lastUserMsg = messages[messages.length - 1]?.content || "";
-    const name = student.firstName || "Candidate";
     const role = student.targetRole || "Software Engineering Intern";
     const skillList = student.skills.map((s) => s.name).join(", ");
 
     if (lastUserMsg.toLowerCase().includes("resume") || lastUserMsg.toLowerCase().includes("cv")) {
-      return `Hello ${name}! For a target role as a ${role}, structure your resume to highlight your top technical skills (${skillList || "core skills"}). Emphasize project outcomes, quantified metrics (e.g. 'improved performance by 25%'), and clear links to your GitHub/Portfolio.`;
+      return `For a target role as a ${role}, structure your resume to highlight your top technical skills (${skillList || "core competencies"}). Emphasize project outcomes, quantified metrics (e.g. 'improved API response latency by 30%'), and direct links to your GitHub repositories and live deployments.`;
     } else if (lastUserMsg.toLowerCase().includes("interview")) {
-      return `Great question, ${name}! To prepare for interviews in ${role}, focus on explaining technical decision trade-offs, demonstrating problem-solving methodologies, and reviewing data structures and system design fundamentals.`;
+      return `When preparing for ${role} interviews, focus on explaining architectural trade-offs, demonstrating structured problem-solving methodologies, and reviewing data structures, algorithmic efficiency, and domain-specific best practices.`;
+    } else if (lastUserMsg.toLowerCase().includes("project") || lastUserMsg.toLowerCase().includes("github")) {
+      return `For your portfolio targeting ${role} opportunities, build 1–2 end-to-end applications with clean architectures, well-documented README files, comprehensive unit tests, and live deployed demonstrations.`;
+    } else if (lastUserMsg.toLowerCase().includes("skill") || lastUserMsg.toLowerCase().includes("improve") || lastUserMsg.toLowerCase().includes("learn")) {
+      return `To accelerate your progress toward a ${role} position, deepen your hands-on mastery in ${skillList || "core technical areas"} while actively building projects involving modern cloud deployment and automated testing.`;
     } else {
-      return `Hello ${name}! As a candidate targeting ${role} positions with skills in ${skillList || "various domains"}, focus on building 1–2 polished end-to-end projects. Having live deployed demonstrations and clean code repositories is the single best way to stand out to internship recruiters. How else can I guide your career journey?`;
+      return `For a candidate targeting ${role} positions with skills in ${skillList || "technical competencies"}, the most effective path forward is creating demonstrable proof of work. Live deployed projects and structured code repositories are the single best way to stand out to internship recruiters.`;
     }
   }
 }

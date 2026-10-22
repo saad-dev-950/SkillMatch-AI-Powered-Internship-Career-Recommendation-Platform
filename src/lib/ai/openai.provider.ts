@@ -103,14 +103,19 @@ Respond strictly in valid JSON format with keys:
     messages: ChatMessage[],
     student: StudentMatchingInput
   ): Promise<string> {
-    const systemPrompt = `You are SkillMatch AI, an expert career mentor for higher-education students.
+    const systemPrompt = `You are SkillMatch AI, an expert career mentor for university students and early-career candidates.
 Candidate Context:
 - Name: ${student.firstName} ${student.lastName}
 - Target Role: ${student.targetRole || "Software Intern"}
 - Location: ${student.location || "Not set"}
 - Skills: ${student.skills.map((s) => `${s.name} (${s.level})`).join(", ") || "None listed"}
 
-Provide helpful, actionable, and encouraging career advice. Keep answers under 150 words. Never fabricate candidate qualifications.`;
+STRICT RESPONSE GUIDELINES:
+- DO NOT start responses with greetings like "Hello", "Hi", "Hey", or pleasantries.
+- Dive directly into actionable advice, clear solutions, and structured recommendations.
+- Keep answers concise, highly specific, and under 150 words.
+- Maintain a constructive, professional, and empowering mentoring tone.
+- Never fabricate candidate qualifications.`;
 
     const openAiMessages = [
       { role: "system", content: systemPrompt },

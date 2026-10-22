@@ -15,7 +15,7 @@ export function AIChatBox({ studentName, targetRole }: AIChatBoxProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
-      content: `Hello ${studentName}! I am your AI Career Mentor on SkillMatch. I can help you tailor your resume for ${targetRole || "internships"}, prepare for technical interviews, or optimize your skill roadmap. How can I assist your career journey today?`,
+      content: `Welcome to your AI Career Guidance session! I am your SkillMatch mentor. Ask me anything about tailoring your resume for ${targetRole || "internships"}, preparing for technical interviews, or optimizing your skill roadmap.`,
     },
   ]);
 
