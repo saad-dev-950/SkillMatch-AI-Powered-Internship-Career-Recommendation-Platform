@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { Sparkles, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
@@ -11,6 +12,7 @@ import { useToast } from "@/components/providers/ToastProvider";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -25,6 +27,16 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      if (session.user.role === "ADMIN") {
+        window.location.href = "/admin/dashboard";
+      } else {
+        window.location.href = "/student/dashboard";
+      }
+    }
+  }, [session, status]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -53,12 +65,30 @@ export default function RegisterPage() {
         return;
       }
 
-      const msg = "Account created successfully! Redirecting to login...";
+      const msg = "Account created successfully! Redirecting to your dashboard...";
       setSuccess(msg);
       toast.success(msg, "Account Registered");
+
+      // Automatically sign in the newly registered student
+      try {
+        const signInRes = await signIn("credentials", {
+          email: formData.email.trim().toLowerCase(),
+          password: formData.password,
+          redirect: false,
+        });
+
+        if (signInRes?.ok && !signInRes.error) {
+          window.location.href = "/student/dashboard";
+          return;
+        }
+      } catch (err) {
+        console.error("Auto sign-in error:", err);
+      }
+
+      // Fallback navigation
       setTimeout(() => {
-        router.push("/login");
-      }, 1200);
+        window.location.href = "/login";
+      }, 1000);
     } catch {
       toast.error("An unexpected error occurred during registration.", "Error");
       setError("An unexpected error occurred during registration.");

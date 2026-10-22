@@ -6,8 +6,30 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const secret = process.env.AUTH_SECRET || "skillmatch-dev-secret-key-32-characters-minimum-length-for-security";
 
-  // Retrieve token from request
-  const token = await getToken({ req, secret });
+  const isHttps = req.nextUrl.protocol === "https:" || req.headers.get("x-forwarded-proto") === "https";
+
+  // Retrieve token from request supporting both localhost (HTTP) and Vercel (HTTPS)
+  let token = await getToken({ req, secret, secureCookie: isHttps });
+  if (!token) {
+    token = await getToken({ req, secret, secureCookie: !isHttps });
+  }
+  if (!token && req.cookies.has("__Secure-authjs.session-token")) {
+    token = await getToken({
+      req,
+      secret,
+      cookieName: "__Secure-authjs.session-token",
+      secureCookie: true,
+    });
+  }
+  if (!token && req.cookies.has("authjs.session-token")) {
+    token = await getToken({
+      req,
+      secret,
+      cookieName: "authjs.session-token",
+      secureCookie: false,
+    });
+  }
+
   const isAuthenticated = !!token;
   const userRole = token?.role as string | undefined;
 
